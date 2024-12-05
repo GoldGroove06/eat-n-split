@@ -21,27 +21,50 @@ const initialFriends = [
     id: 499476,
     name: "Anthony",
     image: "https://i.pravatar.cc/48?u=499476",
-    balance: 0,
+    balance: 50,
   },
 ];
 
 function App() {
+  const [friends, setFriends] = useState(initialFriends)
   const [afOpen, setAfOpen] = useState(false)
+  const [selectedFriend, setSelectedFriend] = useState(null)
   function handleAf(){
     setAfOpen(!afOpen)
   }
   
+  function handleAddFriend(friend) {
+    setFriends((friends) =>[...friends, friend])
+    setAfOpen(false)
+  }
+
+  function handleBill(friend) {
+    selectedFriend === friend ? setSelectedFriend(null): setSelectedFriend(friend)
+   
+    
+  }
+
+  function handleSplitBill(value){
+   console.log(selectedFriend)
+    setFriends(friends.map((friend) =>
+      friend.id === selectedFriend.id ? {...friend, balance: friend.balance + value }: friend
+    ))
+    setSelectedFriend(null)
+
+  }
+
+
   return (
     <div className="app">
       <div className="sidebar">
-      <FriendList initialFriends={initialFriends} />
-      {afOpen ? <div><FriendForm /> <Button onClick={handleAf} >Close</Button></div>:
+      <FriendList initialFriends={friends} handleBill={handleBill} selectedFriend={selectedFriend}/>
+      {afOpen ? <div><FriendForm onAddFriend={handleAddFriend} /> <Button onClick={handleAf} >Close</Button></div>:
       <Button onClick={handleAf}>Add Friend</Button>
-        
-        
       }
-      <BillForm />
+      
+      
       </div>
+      {selectedFriend && <BillForm friend={selectedFriend} onSplitBill={handleSplitBill}/>}
     </div>
   );
 }
